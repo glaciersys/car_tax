@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f3d75" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="apple-touch-icon" href="./icon.svg" />
+  <title>คำนวณภาษีรถยนต์</title>
+  <style>
+    :root { --blue: #0f3d75; --green: #08794d; --red: #c62828; --text: #172033; --muted: #667085; --line: #dbe2ee; --bg: #f4f7fb; --white: #ffffff; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); font-family: system-ui, sans-serif; font-size: 16px; line-height: 1.3; }
+    main { width: min(100%, 500px); margin: auto; padding: 10px; }
+    .hero { text-align: center; margin-bottom: 10px; }
+    .hero-icon { font-size: 40px; }
+    h1 { margin: 0; font-size: 22px; }
+    .card { padding: 12px; border: 1px solid var(--line); border-radius: 16px; background: var(--white); }
+    .field { margin-bottom: 8px; }
+    label { display: block; margin-bottom: 2px; font-size: 15px; font-weight: 700; }
+    .hint { margin: 0 0 4px; color: var(--muted); font-size: 12px; }
+    select, input { width: 100%; height: 45px; border: 2px solid var(--line); border-radius: 10px; padding: 0 10px; font-size: 16px; font-weight: 700; outline: none; }
+    .unit-input { position: relative; }
+    .unit { position: absolute; top: 50%; right: 10px; transform: translateY(-50%); color: var(--muted); font-size: 14px; pointer-events: none; }
+    .age-preview { margin: 2px 0; color: var(--green); font-size: 13px; font-weight: 700; }
+    .age-preview.error { color: var(--red); }
+    .calculate { width: 100%; height: 45px; border: 0; border-radius: 10px; background: var(--blue); color: #fff; font-size: 18px; font-weight: 700; margin-top: 5px; }
+    .result { margin-top: 10px; padding: 12px; border-radius: 16px; background: var(--blue); color: #fff; }
+    .price { margin: 0; font-size: 32px; font-weight: 900; }
+    .breakdown { margin-top: 8px; padding: 10px; border: 1px solid var(--line); border-radius: 12px; background: var(--white); font-size: 14px; }
+    .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+    .secondary { height: 40px; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--blue); font-size: 14px; font-weight: 700; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <main>
+    <header class="hero">
+      <div class="hero-icon" id="vehicleIcon">🚗</div>
+      <h1>คำนวณภาษีรถยนต์</h1>
+    </header>
+    <section class="card">
+      <div class="field">
+        <label>ประเภทรถ</label>
+        <select id="vehicleType">
+          <option value="car">รถยนต์นั่งส่วนบุคคล</option>
+          <option value="motorcycle">รถจักรยานยนต์</option>
+          <option value="pickup">รถกระบะ</option>
+        </select>
+      </div>
+      <div id="ccSection" class="field"><label>ขนาดเครื่องยนต์</label><div class="unit-input"><input id="cc" type="number" placeholder="เช่น 1500"><span class="unit">ซีซี</span></div></div>
+      <div id="registrationYearSection" class="field"><label>ปีจดทะเบียน</label><div class="unit-input"><input id="registrationYear" type="number" placeholder="เช่น 2563"><span class="unit">ปี</span></div><p class="age-preview hidden" id="agePreview"></p></div>
+      <div id="weightSection" class="field hidden"><label>น้ำหนักรถ (กก.)</label><input id="weight" type="number" placeholder="เช่น 1800"></div>
+      <button class="calculate" id="calculate">คำนวณภาษี</button>
+    </section>
+    <section class="result hidden" id="result"><p style="margin:0; opacity:0.8">ภาษีโดยประมาณ</p><p class="price" id="total">฿0</p></section>
+    <section class="breakdown hidden" id="breakdown"><div id="detailText"></div></section>
+    <div class="actions"><button class="secondary" id="save">บันทึก</button><button class="secondary" id="clear">ล้าง</button></div>
+  </main>
+  <script>
+    const el = (id) => document.getElementById(id);
+    const [type, cc, regYear, weight] = [el('vehicleType'), el('cc'), el('registrationYear'), el('weight')];
+    const [res, total, detail, agePrev] = [el('result'), el('total'), el('detailText'), el('agePreview')];
+    
+    function toChristian(y) { return y >= 2400 ? y - 543 : y; }
+    function getAge(y) { return (new Date().getFullYear() - toChristian(y)) + 1; }
+    
+    function updateUI() {
+      const isCar = type.value === 'car', isPickup = type.value === 'pickup';
+      el('ccSection').classList.toggle('hidden', !isCar);
+      el('registrationYearSection').classList.toggle('hidden', !isCar);
+      el('weightSection').classList.toggle('hidden', !isPickup);
+      res.classList.add('hidden'); el('breakdown').classList.add('hidden');
+    }
+
+    regYear.addEventListener('input', () => {
+      const y = Number(regYear.value);
+      if(!y) { agePrev.classList.add('hidden'); return; }
+      const age = getAge(y);
+      agePrev.textContent = `อายุรถ ${age} ปี`;
+      agePrev.classList.remove('hidden');
+    });
+
+    el('calculate').addEventListener('click', () => {
+      let tax = 0;
+      if(type.value === 'motorcycle') tax = 100;
+      else if(type.value === 'car') {
+        let c = Number(cc.value), age = getAge(Number(regYear.value));
+        let t1 = Math.min(c, 600)*0.5, t2 = Math.min(Math.max(c-600,0),1200)*1.5, t3 = Math.max(c-1800,0)*4;
+        tax = (t1+t2+t3) * (1 - (age>=10?0.5:age>=6?(age-5)*0.1:0));
+      } else tax = 1000; // Simplified for demo
+      total.textContent = '฿' + Math.round(tax).toLocaleString();
+      res.classList.remove('hidden');
+    });
+
+    type.addEventListener('change', updateUI);
+    el('clear').addEventListener('click', () => location.reload());
+    updateUI();
+  </script>
+</body>
+</html>
