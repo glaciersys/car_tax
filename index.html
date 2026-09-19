@@ -160,8 +160,8 @@ calc();
   g.fillStyle = "#5b2a86"; g.fillRect(0,0,512,512);
   g.fillStyle = "#ffffff"; g.beginPath(); g.roundRect(56,150,400,212,28); g.fill();
   g.strokeStyle = "#241638"; g.lineWidth = 8; g.beginPath(); g.roundRect(74,168,364,176,18); g.stroke();
-  g.fillStyle = "#241638"; g.font = "bold 110px 'Noto Sans Thai',Tahoma,sans-serif";
-  g.textAlign = "center"; g.textBaseline = "middle"; g.fillText("ภาษี", 256, 258);
+  g.fillStyle = "#241638"; g.font = "bold 100px 'Noto Sans Thai',Tahoma,sans-serif";
+  g.textAlign = "center"; g.textBaseline = "middle"; g.fillText("ภาษีรถ", 256, 258, 320);
   const icon = c.toDataURL("image/png");
   const s = document.createElement("canvas"); s.width = s.height = 192;
   s.getContext("2d").drawImage(c,0,0,192,192);
@@ -184,7 +184,7 @@ calc();
   m.href = URL.createObjectURL(new Blob([JSON.stringify(manifest)], {type: "application/manifest+json"}));
   document.head.appendChild(m);
 
-  if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")){
+  if ("serviceWorker" in navigator && window.isSecureContext){
     navigator.serviceWorker.register("sw.js").catch(() => {});
   }
 })();
