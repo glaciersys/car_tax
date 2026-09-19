@@ -1,27 +1,29 @@
-name: Auto Update SW Cache & Deploy
+name: Auto Update SW Cache
 
 on:
   push:
     branches:
-      - main  # หรือ master ตามชื่อ branch หลักของคุณ
+      - main
+
+permissions:
+  contents: write
 
 jobs:
-  build-and-deploy:
+  update-sw:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Inject Cache Version into sw.js
+      - name: Update sw.js Cache Key
         run: |
-          # ดึง Commit Hash 7 หลักแรกมาเป็นเลขเวอร์ชัน
           SHORT_HASH=$(git rev-parse --short HEAD)
-          echo "Updating Cache Version to: $SHORT_HASH"
-          # แทนที่ __BUILD_HASH__ ด้วย SHORT_HASH ในไฟล์ sw.js
           sed -i "s/__BUILD_HASH__/$SHORT_HASH/g" sw.js
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./  # โฟลเดอร์ที่เก็บไฟล์เว็บ
+      - name: Commit and Push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add sw.js
+          git commit -m "chore: auto-update sw.js cache key" || exit 0
+          git push
