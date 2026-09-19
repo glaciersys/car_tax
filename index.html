@@ -4,18 +4,18 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>คำนวณภาษีรถยนต์ประจำปี</title>
-<meta name="theme-color" content="#0f5c4d">
+<meta name="theme-color" content="#5b2a86">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <style>
 :root{
-  --bg:#eef0ea; --card:#fbfbf7; --ink:#1d2a2b; --mute:#5d6b6a; --line:#cfd6cc;
-  --green:#0f5c4d; --plate:#ffffff; --plate-ink:#1a2426;
+  --bg:#f1eef6; --card:#fcfbff; --ink:#221a2e; --mute:#6a5f7a; --line:#d8d0e4;
+  --brand:#5b2a86; --plate:#ffffff; --plate-ink:#241638;
 }
 @media (prefers-color-scheme:dark){
   :root{
-    --bg:#111819; --card:#182123; --ink:#e6ece9; --mute:#93a3a0; --line:#2b3a3c;
-    --green:#3fb59d; --plate:#eef1ec; --plate-ink:#141c1e;
+    --bg:#150f1e; --card:#1e162c; --ink:#ece6f5; --mute:#a99bbd; --line:#35294a;
+    --brand:#b48bec; --plate:#f1edf7; --plate-ink:#1b1229;
   }
 }
 *{box-sizing:border-box}
@@ -34,7 +34,7 @@ input,select{
   width:100%;font:inherit;color:var(--ink);background:var(--bg);
   border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px;
 }
-input:focus-visible,select:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+input:focus-visible,select:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
 .hide{display:none!important}
 .plate{
   background:var(--plate);color:var(--plate-ink);border-radius:12px;
@@ -157,10 +157,10 @@ calc();
 (function pwa(){
   const c = document.createElement("canvas"); c.width = c.height = 512;
   const g = c.getContext("2d");
-  g.fillStyle = "#0f5c4d"; g.fillRect(0,0,512,512);
+  g.fillStyle = "#5b2a86"; g.fillRect(0,0,512,512);
   g.fillStyle = "#ffffff"; g.beginPath(); g.roundRect(56,150,400,212,28); g.fill();
-  g.strokeStyle = "#1a2426"; g.lineWidth = 8; g.beginPath(); g.roundRect(74,168,364,176,18); g.stroke();
-  g.fillStyle = "#1a2426"; g.font = "bold 110px 'Noto Sans Thai',Tahoma,sans-serif";
+  g.strokeStyle = "#241638"; g.lineWidth = 8; g.beginPath(); g.roundRect(74,168,364,176,18); g.stroke();
+  g.fillStyle = "#241638"; g.font = "bold 110px 'Noto Sans Thai',Tahoma,sans-serif";
   g.textAlign = "center"; g.textBaseline = "middle"; g.fillText("ภาษี", 256, 258);
   const icon = c.toDataURL("image/png");
   const s = document.createElement("canvas"); s.width = s.height = 192;
@@ -174,7 +174,7 @@ calc();
   const manifest = {
     name: "คำนวณภาษีรถยนต์ประจำปี", short_name: "ภาษีรถ", lang: "th",
     start_url: base, scope: base.replace(/[^/]*$/, ""), display: "standalone",
-    background_color: "#0f5c4d", theme_color: "#0f5c4d",
+    background_color: "#5b2a86", theme_color: "#5b2a86",
     icons: [
       {src: icon192, sizes: "192x192", type: "image/png", purpose: "any maskable"},
       {src: icon, sizes: "512x512", type: "image/png", purpose: "any maskable"}
