@@ -1,4 +1,4 @@
-const CACHE = "cartax-v3";
+const CACHE = "cartax-__BUILD_HASH__";
 const FILES = ["./", "./index.html"];
 
 self.addEventListener("install", e => {
